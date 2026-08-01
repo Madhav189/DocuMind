@@ -1,7 +1,11 @@
 import streamlit as st
 import tempfile
 import os
+from dotenv import load_dotenv
 from utils import process_pdf, create_vector_store, get_answer
+
+# Load environment variables (e.g., HUGGINGFACEHUB_API_TOKEN)
+load_dotenv()
 
 st.set_page_config(page_title="DocuMind", page_icon="🧠")
 
