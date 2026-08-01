@@ -46,7 +46,7 @@ def get_answer(query, vector_store):
                 "max_tokens": 512
             }
             response = requests.post(
-                "https://api-inference.huggingface.co/v1/chat/completions",
+                "https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta/v1/chat/completions",
                 headers=headers,
                 json=payload
             )
