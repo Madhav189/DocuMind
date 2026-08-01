@@ -40,13 +40,13 @@ def get_answer(query, vector_store):
                 {"role": "user", "content": f"Context:\n{context}\n\nQuestion: {query}"}
             ]
             payload = {
-                "model": "HuggingFaceH4/zephyr-7b-beta",
+                "model": "mistralai/Mistral-7B-Instruct-v0.3",
                 "messages": messages,
                 "temperature": 0.1,
                 "max_tokens": 512
             }
             response = requests.post(
-                "https://router.huggingface.co/hf-inference/models/HuggingFaceH4/zephyr-7b-beta/v1/chat/completions",
+                "https://router.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.3/v1/chat/completions",
                 headers=headers,
                 json=payload
             )
