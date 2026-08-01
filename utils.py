@@ -35,7 +35,8 @@ def get_answer(query, vector_store):
             from langchain_core.output_parsers import StrOutputParser
             
             llm = HuggingFaceEndpoint(
-                repo_id="mistralai/Mistral-7B-Instruct-v0.2",
+                repo_id="HuggingFaceH4/zephyr-7b-beta",
+                task="text-generation",
                 huggingfacehub_api_token=hf_api_key,
                 temperature=0.1
             )
