@@ -30,29 +30,32 @@ def get_answer(query, vector_store):
     
     if hf_api_key:
         try:
-            from langchain_huggingface import HuggingFaceEndpoint
-            from langchain_core.prompts import PromptTemplate
-            from langchain_core.output_parsers import StrOutputParser
-            
-            llm = HuggingFaceEndpoint(
-                repo_id="HuggingFaceH4/zephyr-7b-beta",
-                task="conversational",
-                huggingfacehub_api_token=hf_api_key,
-                temperature=0.1
+            import requests
+            headers = {
+                "Authorization": f"Bearer {hf_api_key}",
+                "Content-Type": "application/json"
+            }
+            messages = [
+                {"role": "system", "content": "You are a helpful AI assistant. Use the provided context to answer the user's question. If you don't know the answer, say you don't know."},
+                {"role": "user", "content": f"Context:\n{context}\n\nQuestion: {query}"}
+            ]
+            payload = {
+                "model": "HuggingFaceH4/zephyr-7b-beta",
+                "messages": messages,
+                "temperature": 0.1,
+                "max_tokens": 512
+            }
+            response = requests.post(
+                "https://api-inference.huggingface.co/v1/chat/completions",
+                headers=headers,
+                json=payload
             )
             
-            template = """Use the following pieces of context to answer the question at the end.
-If you don't know the answer, just say that you don't know, don't try to make up an answer.
-
-{context}
-
-Question: {question}
-
-Answer:"""
-            prompt = PromptTemplate.from_template(template)
-            chain = prompt | llm | StrOutputParser()
-            
-            return chain.invoke({"context": context, "question": query})
+            if response.status_code == 200:
+                data = response.json()
+                return data["choices"][0]["message"]["content"]
+            else:
+                return f"LLM API Error: {response.status_code} - {response.text}\n\nFallback context:\n{context}"
         except Exception as e:
             return f"LLM Error: {str(e)}\n\nFallback context:\n{context}"
     else:
