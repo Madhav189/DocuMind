@@ -36,7 +36,7 @@ def get_answer(query, vector_store):
             
             llm = HuggingFaceEndpoint(
                 repo_id="HuggingFaceH4/zephyr-7b-beta",
-                task="text-generation",
+                task="conversational",
                 huggingfacehub_api_token=hf_api_key,
                 temperature=0.1
             )
