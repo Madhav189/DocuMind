@@ -30,32 +30,19 @@ def get_answer(query, vector_store):
     
     if hf_api_key:
         try:
-            import requests
-            headers = {
-                "Authorization": f"Bearer {hf_api_key}",
-                "Content-Type": "application/json"
-            }
+            from huggingface_hub import InferenceClient
+            client = InferenceClient(api_key=hf_api_key)
             messages = [
                 {"role": "system", "content": "You are a helpful AI assistant. Use the provided context to answer the user's question. If you don't know the answer, say you don't know."},
                 {"role": "user", "content": f"Context:\n{context}\n\nQuestion: {query}"}
             ]
-            payload = {
-                "model": "microsoft/Phi-3-mini-4k-instruct",
-                "messages": messages,
-                "temperature": 0.1,
-                "max_tokens": 512
-            }
-            response = requests.post(
-                "https://router.huggingface.co/hf-inference/models/microsoft/Phi-3-mini-4k-instruct/v1/chat/completions",
-                headers=headers,
-                json=payload
+            response = client.chat.completions.create(
+                model="Qwen/Qwen2.5-72B-Instruct",
+                messages=messages,
+                max_tokens=512,
+                temperature=0.1
             )
-            
-            if response.status_code == 200:
-                data = response.json()
-                return data["choices"][0]["message"]["content"]
-            else:
-                return f"LLM API Error: {response.status_code} - {response.text}\n\nFallback context:\n{context}"
+            return response.choices[0].message.content
         except Exception as e:
             return f"LLM Error: {str(e)}\n\nFallback context:\n{context}"
     else:
